@@ -25,3 +25,20 @@ def read_pdb_to_dataframe(pdb_path,model_index: int = 1,parse_header: bool = Tru
         raise ValueError(f"No model found for index: {model_index}")
 
     return pd.concat([atomic_df.df["ATOM"], atomic_df.df["HETATM"]]), header
+
+#extract name+coordinates of selected elements in data
+def extract_data_proteins(file):
+    name_atoms=[]
+    coor_atoms=[]
+    elements=['C','N','O','S']
+    a_array = file['element_symbol'].to_numpy()
+    r_array = (file['record_name']=='ATOM').to_numpy()
+    x_array,y_array,z_array = file['x_coord'].to_numpy(),file['y_coord'].to_numpy(),file['z_coord'].to_numpy()
+    coord = [(float(x),float(y),float(z)) for (x,y,z) in zip(x_array,y_array,z_array)]
+    for i,a in enumerate(a_array):
+        if a in elements and r_array[i]==True:
+            name_atoms.append(a)
+            coor_atoms.append(coord[i])
+    
+    return name_atoms,coor_atoms
+
