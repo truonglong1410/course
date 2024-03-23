@@ -42,3 +42,28 @@ def extract_data_proteins(file):
     
     return name_atoms,coor_atoms
 
+---------------------------------------------
+import pandas as pd
+import matplotlib.pyplot as plt
+from biopandas.pdb import PandasPdb
+
+def read_pdb_to_dataframe(pdb_path, model_index=1):
+    # Read the PDB file and store the atomic information in a DataFrame
+    atomic_df = PandasPdb().read_pdb(pdb_path)
+    atomic_df = atomic_df.df["ATOM"].append(atomic_df.df["HETATM"])
+
+    # Check if any models were found
+    if len(atomic_df) == 0:
+        raise ValueError(f"No model found for index: {model_index}")
+
+    return atomic_df
+
+
+df = read_pdb_to_dataframe('3pcb_protein.pdb')
+
+
+plt.plot(df['x_coord'], df['y_coord'])
+plt.xlabel('X Coordinate')
+plt.ylabel('Y Coordinate')
+plt.title('Protein Structure')
+plt.show()
