@@ -13,3 +13,15 @@ import pandas as pd
 import gudhi as gd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+
+def read_pdb_to_dataframe(pdb_path,model_index: int = 1,parse_header: bool = True):
+    atomic_df = PandasPdb().read_pdb('3gst_protein.pdb')
+    if parse_header:
+        header = parsePDBHeader('3gst_protein.pdb')
+    else:
+        header = None
+    atomic_df = atomic_df.get_model(model_index)
+    if len(atomic_df.df["ATOM"]) == 0:
+        raise ValueError(f"No model found for index: {model_index}")
+
+    return pd.concat([atomic_df.df["ATOM"], atomic_df.df["HETATM"]]), header
